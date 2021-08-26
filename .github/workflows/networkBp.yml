@@ -24,6 +24,6 @@ jobs:
             $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
             Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
             Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
-            cd C:\actions-runner\_work\az-blueprint-lz\az-blueprint-lz\network
+            cd D:\a\az-blueprint-lz\az-blueprint-lz\network
             .\deploy.ps1
           azPSVersion: '4.3.0'
