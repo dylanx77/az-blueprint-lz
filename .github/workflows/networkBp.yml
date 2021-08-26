@@ -35,6 +35,7 @@ jobs:
         with:
           inlineScript: |
             Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
+          azPSVersion: '4.3.0'
 
    Deploy:
       env:
@@ -51,3 +52,4 @@ jobs:
           inlineScript: |
             cd C:\actions-runner\_work\az-blueprint-lz\az-blueprint-lz\network
             .\deploy.ps1
+          azPSVersion: '4.3.0'
