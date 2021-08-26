@@ -9,7 +9,7 @@ on:
     - '.github/workflows/networkBp.yml'
 
 jobs:
-   Deploy Network:
+   DeployNetwork:
       environment: Build
       runs-on: windows-2019
       steps:
