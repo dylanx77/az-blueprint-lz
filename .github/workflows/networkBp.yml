@@ -1,0 +1,46 @@
+name: azure_common_lz_workflow
+
+on:
+  push:
+    paths:
+    - '.github/workflows/commonBp.yml'
+  pull_request:
+    paths:
+    - '.github/workflows/commonBp.yml'
+
+jobs:
+
+   Build:
+      environment: Build
+      runs-on: windows-2019
+      steps:
+      - name: Build Stage - Log into Azure
+        run: |
+          $azureApplicationId = "0a90645e-43f7-4228-a3bd-e71961edc59b"
+          $azureTenantId= "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
+          $azurePassword = ConvertTo-SecureString "uDTKOnZiHMcwpcMs45GfEFIr.xYQSMjlSJ" -AsPlainText -Force
+          $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
+          Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
+
+   Test:
+      needs: [Build]
+      environment: Test
+      runs-on: windows-2019
+      steps:
+      - name: Set to specific Subscription for Deployment
+        run: |
+          Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
+
+   Deploy:
+      env:
+        NODE_TLS_REJECT_UNAUTHORIZED: 0
+        GIT_SSL_NO_VERIFY: true
+      needs: [Test]
+      environment: Deploy
+      runs-on: windows-2010
+      steps:
+      - uses: actions/checkout@v2    
+      - name: Deploy the Network Landing Zone
+        run: |     
+          cd C:\actions-runner\_work\az-blueprint-lz\az-blueprint-lz\network
+          .\deploy.ps1
