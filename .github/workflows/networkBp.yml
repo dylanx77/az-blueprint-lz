@@ -3,10 +3,10 @@ name: azure_common_lz_workflow
 on:
   push:
     paths:
-    - '.github/workflows/commonBp.yml'
+    - '.github/workflows/networkBp.yml'
   pull_request:
     paths:
-    - '.github/workflows/commonBp.yml'
+    - '.github/workflows/networkBp.yml'
 
 jobs:
 
