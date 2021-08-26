@@ -1,0 +1,98 @@
+{
+    "kind": "template",
+    "name": "network-landing-zone-vwan",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "properties": {
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "vwanName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Virtual Wan Name"
+                    }
+                },
+                "vwanSku": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Virtual Wan SKU - Basic or Standard"
+                    }
+                },
+                "hubName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Virtual Hub name"
+                    }
+                },
+                "hubAddressPrefix": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Virtual Hub Cidr Range"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Location for all resources."
+                    }
+                }
+              },
+              "variables": {},
+              "resources": [
+                {
+                    "type": "Microsoft.Network/virtualWans",
+                    "name": "[parameters('vwanName')]",
+                    "apiVersion": "2020-05-01",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "type": "[parameters('vwanSku')]",
+                        "disableVpnEncryption": false,
+                        "allowBranchToBranchTraffic": true,
+                        "office365LocalBreakoutCategory": "None"
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/virtualHubs",
+                    "name": "[parameters('hubName')]",
+                    "apiVersion": "2020-05-01",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualWans/', parameters('vwanName'))]"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('hubAddressPrefix')]",
+                        "virtualWan": {
+                            "id": "[resourceId('Microsoft.Network/virtualWans',parameters('vwanName'))]"
+                        }
+                    }
+                }
+              ],
+              "outputs": {
+                "vwanResourceId": {
+                  "type": "string",
+                  "value": "resourceId('Microsoft.Network/virtualNetwork', parameters('vwanName'))"
+                }
+              }
+        },
+        "resourceGroup": "vwanRg",
+        "displayName": "ARM template for the Network landing zone Network Watcher resources across relevant regions",
+        "parameters": {
+            "location": {
+                "value": "[parameters('location')]"
+            },
+            "vwanName": {
+                "value": "[parameters('vwanName')]"
+            },
+            "vwanSku": {
+                "value": "[parameters('vwanSku')]"
+            },
+            "hubName": {
+                "value": "[parameters('hubName')]"
+            },
+            "hubAddressPrefix": {
+                "value": "[parameters('hubAddressPrefix')]"
+            }
+        }
+    }
+}

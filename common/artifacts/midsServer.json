@@ -1,0 +1,253 @@
+{
+    "kind": "template",
+    "name": "common-landing-zone-snow-mids",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "properties": {
+        "dependsOn": [
+            "vnetCommon"
+        ],
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "midsVmName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Mid VM Name"
+                    }
+                },
+                "adminPassword": {
+                    "type": "securestring",
+                    "metadata": {
+                        "description": "Admin password for GH Runner VMs"
+                    }
+                },
+                "storageAccountMidsVm": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Storage account for GH runner boot diagnostics"
+                    }
+                },
+                "midsServerSubnetId":{
+                    "type": "string",
+                    "metadata": {
+                        "description": "Subnet ID that Mids server will be deployed to"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Resources location"
+                    }
+                }
+            },
+            "variables": {
+                "midsVmName-nic": "[concat(parameters('midsVmName'), '-nic')]",
+                "midsVmName-ststop": "[concat('shutdown-computevm-', parameters('midsVmName'))]"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Network/networkInterfaces",
+                    "apiVersion": "2020-11-01",
+                    "name": "[variables('midsVmName-nic')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "ipConfigurations": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Dynamic",
+                                    "subnet": {
+                                        "id": "[parameters('midsServerSubnetId')]"
+                                    },
+                                    "primary": true,
+                                    "privateIPAddressVersion": "IPv4"
+                                }
+                            }
+                        ],
+                        "dnsSettings": {
+                            "dnsServers": []
+                        },
+                        "enableAcceleratedNetworking": false,
+                        "enableIPForwarding": false
+                    }
+                },
+                {
+                    "type": "Microsoft.Storage/storageAccounts",
+                    "apiVersion": "2021-04-01",
+                    "name": "[parameters('storageAccountMidsVm')]",
+                    "location": "[parameters('location')]",
+                    "sku": {
+                        "name": "Standard_LRS",
+                        "tier": "Standard"
+                    },
+                    "kind": "StorageV2",
+                    "properties": {
+                        "minimumTlsVersion": "TLS1_2",
+                        "networkAcls": {
+                            "bypass": "AzureServices",
+                            "virtualNetworkRules": [],
+                            "ipRules": [],
+                            "defaultAction": "Allow"
+                        },
+                        "supportsHttpsTrafficOnly": true,
+                        "encryption": {
+                            "services": {
+                                "file": {
+                                    "keyType": "Account",
+                                    "enabled": true
+                                },
+                                "blob": {
+                                    "keyType": "Account",
+                                    "enabled": true
+                                }
+                            },
+                            "keySource": "Microsoft.Storage"
+                        },
+                        "accessTier": "Hot"
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "apiVersion": "2021-03-01",
+                    "name": "[concat(parameters('midsVmName'), '/IaaSAntimalware')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('midsVmName'))]"
+                    ],
+                    "properties": {
+                        "autoUpgradeMinorVersion": true,
+                        "publisher": "Microsoft.Azure.Security",
+                        "type": "IaaSAntimalware",
+                        "typeHandlerVersion": "1.1",
+                        "settings": {
+                            "AntimalwareEnabled": true,
+                            "Exclusions": {
+                                "Paths": null,
+                                "Extensions": null,
+                                "Processes": null
+                            },
+                            "RealtimeProtectionEnabled": "true",
+                            "ScheduledScanSettings": {
+                                "isEnabled": "false",
+                                "scanType": "Quick",
+                                "day": "7",
+                                "time": "120"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "microsoft.devtestlab/schedules",
+                    "apiVersion": "2018-09-15",
+                    "name": "[variables('midsVmName-ststop')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('midsVmName'))]"
+                    ],
+                    "properties": {
+                        "status": "Enabled",
+                        "taskType": "ComputeVmShutdownTask",
+                        "dailyRecurrence": {
+                            "time": "1900"
+                        },
+                        "timeZoneId": "Eastern Standard Time",
+                        "notificationSettings": {
+                            "status": "Disabled",
+                            "timeInMinutes": 30,
+                            "notificationLocale": "en"
+                        },
+                        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('midsVmName'))]"
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachines",
+                    "apiVersion": "2021-03-01",
+                    "name": "[parameters('midsVmName')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/networkInterfaces', variables('midsVmName-nic'))]",
+                        "[resourceId('Microsoft.Storage/StorageAccounts', parameters('storageAccountMidsVm'))]"
+                    ],
+                    "zones": [
+                        "1"
+                    ],
+                    "identity": {
+                        "type": "SystemAssigned"
+                    },
+                    "properties": {
+                        "hardwareProfile": {
+                            "vmSize": "Standard_B2ms"
+                        },
+                        "storageProfile": {
+                            "imageReference": {
+                                "publisher": "MicrosoftWindowsServer",
+                                "offer": "WindowsServer",
+                                "sku": "2019-datacenter-gensecond",
+                                "version": "latest"
+                            },
+                            "osDisk": {
+                                "osType": "Windows",
+                                "name": "[concat(parameters('midsVmName'), '_OsDisk_1')]",
+                                "createOption": "FromImage",
+                                "caching": "ReadWrite",
+                                "managedDisk": {
+                                    "storageAccountType": "StandardSSD_LRS"
+                                },
+                                "diskSizeGB": 127
+                            },
+                            "dataDisks": []
+                        },
+                        "osProfile": {
+                            "computerName": "[parameters('midsVmName')]",
+                            "adminUsername": "acp4govadmin",
+                            "adminPassword": "[parameters('adminPassword')]",
+                            "windowsConfiguration": {
+                                "provisionVMAgent": true,
+                                "enableAutomaticUpdates": true,
+                                "patchSettings": {
+                                    "patchMode": "AutomaticByOS",
+                                    "assessmentMode": "ImageDefault"
+                                }
+                            },
+                            "secrets": [],
+                            "allowExtensionOperations": true
+                        },
+                        "networkProfile": {
+                            "networkInterfaces": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('midsVmName-nic'))]"
+                                }
+                            ]
+                        },
+                        "diagnosticsProfile": {
+                            "bootDiagnostics": {
+                                "enabled": true,
+                                "storageUri": "[concat('https://', parameters('storageAccountMidsVm'), '.blob.core.windows.net/')]"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "resourceGroup": "midsResourceGroup",
+        "displayName": "ARM template for the Common landing zone SNOW Mid server resources",
+        "parameters": {
+            "midsVmName": {
+                "value": "[parameters('midsVmName')]"
+            },
+            "adminPassword": {
+                "value": "[parameters('adminPassword')]"
+            },
+            "storageAccountMidsVm": {
+                "value": "[parameters('storageAccountMidsVm')]"
+            },
+            "midsServerSubnetId": {
+                "value": "[parameters('midsServerSubnetId')]"
+            },
+            "location": {
+                "value": "[parameters('location')]"
+            }
+        }
+    }
+}

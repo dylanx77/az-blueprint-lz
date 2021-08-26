@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "spLoadbalancerName": {
+            "value": "[parameters('spLoadbalancerName')]"
+        },
+        "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+        },
+        "spVmT01": {
+            "value": "[parameters('spVmT01')]"
+        },
+        "spVmT02": {
+            "value": "[parameters('spVmT02')]"
+        },
+        "spVmU01": {
+            "value": "[parameters('spVmU01')]"
+        },
+        "spVmU02": {
+            "value": "[parameters('spVmU02')]"
+        },
+        "spImagePublisher": {
+            "value": "[parameters('spImagePublisher')]"
+        },
+        "spImageOffer": {
+            "value": "[parameters('spImageOffer')]"
+        },
+        "spImageSku": {
+            "value": "[parameters('spImageSku')]"
+        },
+        "spImageVersion": {
+            "value": "[parameters('spImageVersion')]"
+        },
+        "identitySpSnId": {
+            "value": "[parameters('identitySpSnId')]"
+        },
+        "storageAccountSp": {
+            "value": "[parameters('spImageOffer')]"
+        },
+        "sqlAdministratorLogin": {
+            "value": "[parameters('sqlAdministratorLogin')]"
+        },
+        "sqlAdministratorLoginPassword": {
+            "value": "[parameters('adminPassword')]"
+        },
+        "sqlServerName": {
+            "value": "[parameters('sqlServerName')]"
+        },
+        "databaseName": {
+            "value": "[parameters('databaseName')]"
+        },
+        "privateEndpointName": {
+            "value": "[parameters('privateEndpointName')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+        }
+    }
+}

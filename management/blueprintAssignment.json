@@ -1,0 +1,53 @@
+{
+    "properties": {
+        "blueprintId": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/providers/Microsoft.Blueprint/blueprints/ManagementLzBpTest",
+        "description": "Blueprint assignment file for a subscription (management) scoped blueprint.",
+        "resourceGroups": {
+            "vnetRg": {
+                "name": "rg-network-dev-management-usgovva-arm",
+                "location": "eastus"
+            },
+            "arcGcpRg": {
+                "name": "rg-dev-management-arc-gcp-useast01-arm",
+                "location": "eastus"
+            },
+            "arcAwsRg": {
+                "name": "rg-dev-management-arc-aws-useast01-arm",
+                "location": "eastus"
+            }
+        },
+        "parameters": {
+            "location": {
+                "value": "eastus"
+            },
+            "environment": {
+                "value": "test"
+            },
+            "networkSecurityGroupName": {
+                "value": "nsg-dev-management-usgovva-arm"
+            },
+            "vnetName": {
+                "value": "vnet-192.168.6.0_24-dev-management-usgovva"
+            },
+            "vnetCidr": {
+                "value": "192.168.6.0/24"
+            },
+            "dnsServers": {
+                "value": ["10.216.2.101"]
+            },
+            "bastionSnCidr": {
+                "value": "192.168.6.0/27"
+            },
+            "publicIpAddressForBastionName": {
+                "value": "management-bastion-pip-arm"
+            },
+            "bastionName": {
+                "value": "management-bastion-vm-arm"
+            }
+        }
+    },
+    "identity": {
+        "type": "systemAssigned"
+    },
+    "location": "eastus"
+}

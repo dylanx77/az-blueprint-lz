@@ -1,0 +1,197 @@
+{
+    "properties": {
+        "description": "This blueprint deploys resources in the Common subscription.",
+        "targetScope": "subscription",
+        "type": "Microsoft.Blueprint/blueprints",
+        "resourceGroups": {
+            "commonVnetResourceGroup": {
+                "description": "Common VNET resource group."
+            },
+            "avdResourceGroup": {
+                "description": "Azure Virtual Desktop resource group."
+            },
+            "ghRunnersResourceGroup": {
+                "description": "Github Runners VMs resource group"
+            },
+            "midsResourceGroup": {
+                "description": "SNOW Mid server resource group."
+            }
+        },
+        "parameters": {
+            "location": {
+                "type": "string",
+                "metadata": {
+                    "description": "Resources location"
+                }
+            },
+            "environment": {
+                "type": "string",
+                "metadata": {
+                    "description": "Environment Name - dev, test, nonprod, prod"
+                }
+            },
+            "networkSecurityGroupName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Common Network Security Group name"
+                }
+            },
+            "vnetName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Common VNET Name"
+                }
+            },
+            "vnetCidr": {
+                "type": "string",
+                "metadata": {
+                    "description": "Common VNET CIDR"
+                }
+            },
+            "hubName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Virtual hub name that VNET will be peered to"
+                }
+            },
+            "vnetId": {
+                "type": "string",
+                "metadata": {
+                    "description": "Common VNET ID"
+                }
+            },
+            "dnsServers": {
+                "type": "array",
+                "metadata": {
+                    "description": "Common DNS servers"
+                }
+            },
+            "avdSnCidr": {
+                "type": "string",
+                "metadata": {
+                    "description": "GH Runner 01 Name"
+                }
+            },
+            "snowMidsSnCidr": {
+                "type": "string",
+                "metadata": {
+                    "description": "GH Runner 01 Name"
+                }
+            },
+            "ghRunnersSnCidr": {
+                "type": "string",
+                "metadata": {
+                    "description": "GH Runner 01 Name"
+                }
+            },
+            "ghRunner01": {
+                "type": "string",
+                "metadata": {
+                    "description": "GH Runner 01 Name"
+                }
+            },
+            "ghRunner02": {
+                "type": "string",
+                "metadata": {
+                    "description": "GH Runner 02 Name"
+                }
+            },
+            "adminPassword": {
+                "type": "securestring",
+                "metadata": {
+                    "description": "Admin password for VMs"
+                }
+            },
+            "storageAccountGitRunners": {
+                "type": "string",
+                "metadata": {
+                    "description": "Storage account for GH runner boot diagnostics"
+                }
+            },
+            "ghRunnersSubnetId": {
+                "type": "string",
+                "metadata": {
+                    "description": "Subnet ID that GH Runners will be deployed to"
+                }
+            },
+            "midsVmName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Mid VM Name"
+                }
+            },
+            "storageAccountMidsVm": {
+                "type": "string",
+                "metadata": {
+                    "description": "Storage account for GH runner boot diagnostics"
+                }
+            },
+            "midsServerSubnetId":{
+                "type": "string",
+                "metadata": {
+                    "description": "Subnet ID that Mids server will be deployed to"
+                }
+            },
+            "hostPoolName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Host pool name"
+                }
+            },
+            "applicationGroupName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Application Group name"
+                }
+            },
+            "workspaceName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Workspace name"
+                }
+            },
+            "hostPoolDescription": {
+                "type": "string",
+                "metadata": {
+                    "description": "Host pool description"
+                }
+            },
+            "hostPoolType": {
+                "type": "string",
+                "metadata": {
+                    "description": "Host pool type"
+                }
+            },
+            "personalDesktopAssignmentType": {
+                "type": "string",
+                "metadata": {
+                    "description": "Personal desktop assignment type"
+                }
+            },
+            "loadBalancerType": {
+                "type": "string",
+                "metadata": {
+                    "description": "Load balancer type"
+                }
+            },
+            "validationEnvironment": {
+                "type": "bool",
+                "metadata": {
+                    "description": "Validation environment"
+                }
+            },
+            "preferredAppGroupType": {
+                "type": "string",
+                "metadata": {
+                    "description": "Preferred app group type"
+                }
+            },
+            "vmTemplate": {
+                "type": "string",
+                "metadata": {
+                    "description": "VM Template for host pool VMs"
+                }
+            }
+        }
+    }
+}

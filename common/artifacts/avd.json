@@ -1,0 +1,168 @@
+{
+    "kind": "template",
+    "name": "common-landing-zone-azure-virtual-desktop",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "properties": {
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "hostPoolName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Host pool name"
+                    }
+                },
+                "applicationGroupName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Application Group name"
+                    }
+                },
+                "workspaceName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Workspace name"
+                    }
+                },
+                "hostPoolDescription": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Host pool description"
+                    }
+                },
+                "hostPoolType": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Host pool type"
+                    }
+                },
+                "personalDesktopAssignmentType": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Personal desktop assignment type"
+                    }
+                },
+                "loadBalancerType": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Load balancer type"
+                    }
+                },
+                "validationEnvironment": {
+                    "type": "bool",
+                    "metadata": {
+                        "description": "Validation environment"
+                    }
+                },
+                "preferredAppGroupType": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Preferred app group type"
+                    }
+                },
+                "vmTemplate": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "VM Template for host pool VMs"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Location for all resources."
+                    }
+                }
+            },
+            "variables": {},
+            "resources": [
+                {
+                    "type": "Microsoft.DesktopVirtualization/hostpools",
+                    "apiVersion": "2021-02-01-preview",
+                    "name": "[parameters('hostpoolName')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "description": "[parameters('hostPoolDescription')]",
+                        "hostPoolType": "[parameters('hostPoolType')]",
+                        "personalDesktopAssignmentType": "[parameters('personalDesktopAssignmentType')]",
+                        "maxSessionLimit": 999999,
+                        "loadBalancerType": "[parameters('loadBalancerType')]",
+                        "validationEnvironment": "[parameters('validationEnvironment')]",
+                        "vmTemplate": "[parameters('vmTemplate')]",
+                        "preferredAppGroupType": "[parameters('preferredAppGroupType')]",
+                        "startVMOnConnect": false
+                    }
+                },
+                {
+                    "type": "Microsoft.DesktopVirtualization/applicationgroups",
+                    "apiVersion": "2021-02-01-preview",
+                    "name": "[parameters('applicationGroupName')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostpoolName'))]"
+                    ],
+                    "kind": "[parameters('preferredAppGroupType')]",
+                    "properties": {
+                        "hostPoolArmPath": "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostpoolName'))]",
+                        "description": "Desktop Application Group created through the Hostpool Wizard",
+                        "friendlyName": "Default Desktop",
+                        "applicationGroupType": "[parameters('preferredAppGroupType')]"
+                    }
+                },
+                {
+                    "type": "Microsoft.DesktopVirtualization/workspaces",
+                    "apiVersion": "2021-02-01-preview",
+                    "name": "[parameters('workspaceName')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.DesktopVirtualization/applicationgroups', parameters('applicationGroupName'))]"
+                    ],
+                    "properties": {
+                        "applicationGroupReferences": [
+                            "[resourceId('Microsoft.DesktopVirtualization/applicationgroups', parameters('applicationGroupName'))]"
+                        ]
+                    }
+                }
+            ],
+            "outputs": {
+            }
+        },
+        "resourceGroup": "avdResourceGroup",
+        "displayName": "ARM template for the Common landing zone Azure Virtual Desktop Deployment",
+        "parameters": {
+            "hostPoolName": {
+                "value": "[parameters('hostPoolName')]"
+            },
+            "hostPoolDescription": {
+                "value": "[parameters('hostPoolDescription')]"
+            },
+            "workspaceName": {
+                "value": "[parameters('workspaceName')]"
+            },
+            "applicationGroupName": {
+                "value": "[parameters('applicationGroupName')]"
+            },
+            "hostPoolType": {
+                "value": "[parameters('hostPoolType')]"
+            },
+            "personalDesktopAssignmentType": {
+                "value": "[parameters('personalDesktopAssignmentType')]"
+            },
+            "loadBalancerType": {
+                "value": "[parameters('loadBalancerType')]"
+            },
+            "validationEnvironment": {
+                "value": "[parameters('validationEnvironment')]"
+            },
+            "preferredAppGroupType": {
+                "value": "[parameters('preferredAppGroupType')]"
+            },
+            "vmTemplate": {
+                "value": "[parameters('vmTemplate')]"
+            },
+            "location": {
+                "value": "[parameters('location')]"
+            }
+        }
+    }
+}

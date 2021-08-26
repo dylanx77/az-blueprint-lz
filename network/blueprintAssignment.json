@@ -1,0 +1,45 @@
+{
+    "properties": {
+        "blueprintId": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/providers/Microsoft.Blueprint/blueprints/NetworkLzBpTest",
+        "description": "Test blueprint assignment file for a subscription scoped blueprint.",
+        "resourceGroups": {
+            "vwanRg": {
+                "name": "rg-network-dev-usgovva",
+                "location": "eastus"
+            },
+            "networkWatcherRg": {
+                "name": "NetworkWatcherRG",
+                "location": "eastus"
+            }
+        },
+        "parameters": {
+            "location": {
+                "value": "eastus"
+            },
+            "vwanName": {
+                "value": "vwan-dev-network-usgovva"
+            },
+            "vwanSku": {
+                "value": "Standard"
+            },
+            "hubName": {
+                "value": "hub-dev-network-usgovva"
+            },
+            "hubAddressPrefix": {
+                "value": "10.216.0.0/24"
+            },
+            "nwWatcherLocationsFromBlueprint": {
+                "value": [
+                    "eastus",
+                    "eastus2",
+                    "westus",
+                    "westus2"
+                ]
+            }
+        }
+    },
+    "identity": {
+        "type": "systemAssigned"
+    },
+    "location": "eastus"
+}

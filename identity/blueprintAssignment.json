@@ -1,0 +1,104 @@
+{
+    "properties": {
+        "blueprintId": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/providers/Microsoft.Blueprint/blueprints/IdentityLzBpTest",
+        "description": "Test blueprint assignment file for a subscription (identity) scoped blueprint.",
+        "resourceGroups": {
+            "identityVnetResourceGroup": {
+                "name": "rg-network-identity-dev-eastus",
+                "location": "eastus"
+            },
+            "addsResourceGroup": {
+                "name": "rg-identity-dev-adds",
+                "location": "eastus"
+            },
+            "rsvResourceGroup": {
+                "name": "rsv-rg-identity-dev",
+                "location": "eastus"
+            },
+            "kvResourceGroup": {
+                "name": "kv-rg-identity-dev",
+                "location": "eastus"
+            }
+        },
+        "parameters": {
+            "location": {
+                "value": "eastus"
+            },
+            "environment": {
+                "value": "dev"
+            },
+            "keyVaultName": {
+                "value": "kv-dev-identity-02"
+            },
+            "vaultSku": {
+                "value": "Standard"
+            },
+            "objectId": {
+                "value": "c99772f8-320a-4087-8a38-09bbeae92b5a"
+            },
+            "keysPermissions": {
+                "value": ["all"]
+            },
+            "secretsPermissions": {
+                "value": ["all"]
+            },
+            "recoveryServicesVaultName": {
+                "value": "rsv-dev-identity-01"
+            },
+            "networkSecurityGroupName": {
+                "value": "dev-identity-nsg-test"
+            },
+            "vnetName": {
+                "value": "dev-identity-vnet-test"
+            },
+            "vnetCidr": {
+                "value": "10.216.2.0/24"
+            },
+            "dnsServers": {
+                "value": ["10.216.2.101"]
+            },
+            "bastionSnCidr": {
+                "value": "10.216.2.0/27"
+            },
+            "adSnCidr": {
+                "value": "10.216.2.32/27"
+            },
+            "pamSnCidr": {
+                "value": "10.216.2.96/27"
+            },
+            "sailpointSnCidr": {
+                "value": "10.216.2.64/27"
+            },
+            "publicIpAddressForBastionName": {
+                "value": "identity-bastion-pip"
+            },
+            "bastionName": {
+                "value": "vm-bastion-test-01"
+            },
+            "addsVm01": {
+                "value": "vm-adds-test-01"
+            },
+            "addsVm02": {
+                "value": "vm-adds-test-02"
+            },
+            "adminPassword": {
+                "reference": {
+                    "keyVault": {
+                        "id": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/resourceGroups/rg-kv-useast-01/providers/Microsoft.KeyVault/vaults/kv-test-useast-03"
+                    },
+                    "secretName": "vm-secret-01"
+                }
+            },
+            "storageAccountAdds": {
+                "value": "saadds0129"
+            },
+            "identityAddsSnId": {
+                "value": "[artifacts('vnetIdentity').outputs.adSubnetId]"
+            }
+        }
+    },
+    "identity": {
+        "type": "systemAssigned"
+    },
+    "location": "eastus"
+}

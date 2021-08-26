@@ -1,0 +1,175 @@
+"pamVm01": {
+    "type": "string",
+    "metadata": {
+        "description": "PAM VM 01 Name"
+    }
+},
+"pamVm02": {
+    "type": "string",
+    "metadata": {
+        "description": "PAM VM 02 Name"
+    }
+},
+"storageAccountPam": {
+    "type": "string",
+    "metadata": {
+        "description": "Storage account for PAM VM boot diagnostics"
+    }
+},
+"identityPamSnId": {
+    "type": "string",
+    "metadata": {
+        "description": "Subnet ID that PAM VMs will be deployed to"
+    }
+},
+"spLoadbalancerName": {
+    "type": "String",
+    "metadata": {
+        "description": "Sailpoint Loadbalancer"
+    }
+},
+"spVmT01": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of test Sailpoint VM 01"
+    }
+},
+"spVmT02": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of test Sailpoint VM 02"
+    }
+},
+"spVmU01": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of UAT Sailpoint VM 01"
+    }
+},
+"spVmU02": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of UAT Sailpoint VM 02"
+    }
+},
+"spImagePublisher": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of Sailpoint VM Image Publisher"
+    }
+},
+"spImageOffer": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of Sailpoint VM Image Sku"
+    }
+},
+"spImageSku": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of Sailpoint VM Image SKU"
+    }
+},
+"spImageVersion": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of Sailpoint VM Image Version"
+    }
+},
+"identitySpSnId": {
+    "type": "string",
+    "metadata": {
+        "description": "Subnet ID that Sailpoint VMs will be deployed to"
+    }
+},
+"storageAccountSp": {
+    "type": "string",
+    "metadata": {
+        "description": "Storage account for Sailpoint VM boot diagnostics"
+    }
+},
+"sqlAdministratorLogin": {
+    "type": "string",
+    "metadata": {
+        "description": "The administrator username of the SQL logical server"
+    }
+},
+"sqlServerName": {
+    "type": "string",
+    "metadata": {
+        "description": "The name of the SQL server."
+    }
+},
+"databaseName": {
+    "type": "string",
+    "metadata": {
+        "description": "The name of the SQL database."
+    }
+},
+"privateEndpointName": {
+    "type": "string",
+    "metadata": {
+        "description": "Name of the SQL server private endpoint."
+    }
+}
+
+
+"pamVm01": {
+    "value": "pamvm01"
+},
+"pamVm02": {
+    "value": "pamvm02"
+},
+"storageAccountPam": {
+    "value": "sapam0129"
+},
+"identityPamSnId": {
+    "value": "[artifacts('identityVnetArtifact').outputs.pamSubnetId]"
+},
+"spLoadbalancerName": {
+    "value": "ilb-dev-identity-sailpoint-usgovva-arm"
+},
+"spVmT01": {
+    "value": "vmsptazgov1"
+},
+"spVmT02": {
+    "value": "vmsptazgov2"
+},
+"spVmU01": {
+    "value": "vmspuazgov1"
+},
+"spVmU02": {
+    "value": "vmspuazgov2"
+},
+"spImagePublisher": {
+    "value": "OpenLogic"
+},
+"spImageOffer": {
+    "value": "CentOS"
+},
+"spImageSku": {
+    "value": "7.5"
+},
+"spImageVersion": {
+    "value": "latest"
+},
+"identitySpSnId": {
+    "value": "[artifacts('identityVnetArtifact').outputs.sailpointSubnetId]"
+},
+"storageAccountSp": {
+    "value": "diagvmdevsparm"
+},
+"sqlAdministratorLogin": {
+    "value": "sqladmin"
+},
+"sqlServerName": {
+    "value": "sqlsvr-dev-identity-sailpoint-usgovva-arm"
+},
+"databaseName": {
+    "value": "sqlsvr-db01-dev-identity-sailpoint-usgovva-arm"
+},
+"privateEndpointName": {
+    "value": "pvtlnk-dev-identity-sailpoint-usgovva-arm"
+}
+
+

@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "value": "rg-dev-management-start-stopv2-usgovva-arm"
+        },
+        "resourceGroupRegion": {
+            "value": "eastus"
+        },
+        "azureFunctionAppName": {
+            "value": "dev-management-start-stop-usgovva-arm"
+        },
+        "applicationInsightsName": {
+            "value": "dev-management-start-stop-usgovva-arm"
+        },
+        "applicationInsightsRegion": {
+            "value": "eastus"
+        },
+        "storageAccountName": {
+            "value": "slrsstartstopv2arm"
+        },
+        "emailAddresses": {
+            "value": "grahamd17@outlook.com"
+        }
+    }
+}

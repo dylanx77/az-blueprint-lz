@@ -1,0 +1,53 @@
+{
+  "kind": "template",
+  "name": "identity-landing-zone-rsv",
+  "type": "Microsoft.Blueprint/blueprints/artifacts",
+  "properties": {
+      "dependsOn": [
+          "vnetIdentity"
+      ],
+      "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+              "vaultName": {
+                  "type": "string",
+                  "metadata": {
+                      "description": "RSV name"
+                  }
+              },
+              "location": {
+                  "type": "string",
+                  "metadata": {
+                      "description": "Resources location"
+                  }
+              }
+          },
+          "variables": {
+          },
+          "resources": [
+              {
+                  "type": "Microsoft.RecoveryServices/vaults",
+                  "apiVersion": "2018-01-10",
+                  "name": "[parameters('vaultName')]",
+                  "location": "[parameters('location')]",
+                  "sku": {
+                      "name": "RS0",
+                      "tier": "Standard"
+                  },
+                  "properties": {}
+              }
+          ]
+      },
+      "resourceGroup": "rsvResourceGroup",
+      "displayName": "ARM template for the Identity landing zone Recovery Services Vault",
+      "parameters": {
+          "vaultName": {
+              "value": "[parameters('recoveryServicesVaultName')]"
+          },
+          "location": {
+              "value": "[parameters('location')]"
+          }
+      }
+  }
+}

@@ -1,0 +1,42 @@
+{
+    "kind": "template",
+    "name": "network-landing-zone-network-watcher-resources",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "properties": {
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "networkWatcherLocations": {
+                  "type": "array",
+                  "metadata": {
+                    "description": "Locations/regions that Network Watcher service will be deployed."
+                  }
+                }
+              },
+              "variables": {},
+              "resources": [
+                  {
+                      "type": "Microsoft.Network/networkWatchers",
+                      "apiVersion": "2020-05-01",
+                      "name": "[concat('NetworkWatcher_', parameters('networkWatcherLocations')[copyIndex()])]",        
+                      "location": "[parameters('networkWatcherLocations')[copyIndex()]]",
+                      "properties": {},
+                      "copy": {
+                          "name": "networkWatchers",
+                          "count": "[length(parameters('networkWatcherLocations'))]"
+                      }
+                  }
+              ],
+              "outputs": {
+              }
+        },
+        "resourceGroup": "networkWatcherRg",
+        "displayName": "ARM template for the Network landing zone Network Watcher resources across relevant regions",
+        "parameters": {
+            "networkWatcherLocations": {
+                "value": "[parameters('nwWatcherLocationsFromBlueprint')]"
+            }
+        }
+    }
+}

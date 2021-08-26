@@ -1,0 +1,74 @@
+{
+    "properties": {
+        "description": "This blueprint deploys resources in the Management subscription.",
+        "targetScope": "subscription",
+        "type": "Microsoft.Blueprint/blueprints",
+        "resourceGroups": {
+            "vnetRg": {
+                "description": "Resource group that will host Management subscription VNET."
+            },
+            "arcGcpRg": {
+                "description": "Resource group that contains ARC resources for GCP."
+            },
+            "arcAwsRg": {
+                "description": "Resource group that contains ARC resources for AWS."
+            }
+        },
+        "parameters": {
+            "environment": {
+                "type": "string",
+                "metadata": {
+                    "description": "Environment Name - dev, test, nonprod, prod"
+                }
+            },
+            "location": {
+                "type": "string",
+                "metadata": {
+                    "description": "Region to deploy resources to"
+                }
+            },
+            "networkSecurityGroupName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Identity Network Security Group name"
+                }
+            },
+            "vnetName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Identity VNET Name"
+                }
+            },
+            "vnetCidr": {
+                "type": "string",
+                "metadata": {
+                    "description": "Identity VNET CIDR"
+                }
+            },
+            "dnsServers": {
+                "type": "array",
+                "metadata": {
+                    "description": "Identity DNS servers"
+                }
+            },
+            "bastionSnCidr": {
+                "type": "string",
+                "metadata": {
+                    "description": "Bastion subnet CIDR"
+                }
+            },
+            "publicIpAddressForBastionName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Idenity Bastion host public IP address name"
+                }
+            },
+            "bastionName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Identity Bastion host name"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,327 @@
+{
+    "kind": "template",
+    "name": "identity-landing-zone-adds",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "properties": {
+        "dependsOn": [
+            "vnetIdentity"
+        ],
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "addsVm01": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "ADDS VM 01 Name"
+                    }
+                },
+                "addsVm02": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "ADDS VM 02 Name"
+                    }
+                },
+                "adminPassword": {
+                    "type": "securestring",
+                    "metadata": {
+                        "description": "Admin password for GH Runner VMs"
+                    }
+                },
+                "storageAccountAdds": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Storage account for ADDS VM boot diagnostics"
+                    }
+                },
+                "identityAddsSnId": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Subnet ID that ADDS VMs will be deployed to"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Resources location"
+                    }
+                }
+            },
+            "variables": {
+                "addsVm01-nic": "[concat(parameters('addsVm01'), '-nic')]",
+                "addsVm02-nic": "[concat(parameters('addsVm02'), '-nic')]"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Network/networkInterfaces",
+                    "apiVersion": "2020-11-01",
+                    "name": "[variables('addsVm01-nic')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "ipConfigurations": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Dynamic",
+                                    "subnet": {
+                                        "id": "[parameters('identityAddsSnId')]"
+                                    },
+                                    "primary": true,
+                                    "privateIPAddressVersion": "IPv4"
+                                }
+                            }
+                        ],
+                        "dnsSettings": {
+                            "dnsServers": []
+                        },
+                        "enableAcceleratedNetworking": false,
+                        "enableIPForwarding": false
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/networkInterfaces",
+                    "apiVersion": "2020-11-01",
+                    "name": "[variables('addsVm02-nic')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "ipConfigurations": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Dynamic",
+                                    "subnet": {
+                                        "id": "[parameters('identityAddsSnId')]"
+                                    },
+                                    "primary": true,
+                                    "privateIPAddressVersion": "IPv4"
+                                }
+                            }
+                        ],
+                        "dnsSettings": {
+                            "dnsServers": []
+                        },
+                        "enableAcceleratedNetworking": false,
+                        "enableIPForwarding": false
+                    }
+                },
+                {
+                    "type": "Microsoft.Storage/storageAccounts",
+                    "apiVersion": "2021-04-01",
+                    "name": "[parameters('storageAccountAdds')]",
+                    "location": "[parameters('location')]",
+                    "sku": {
+                        "name": "Standard_LRS",
+                        "tier": "Standard"
+                    },
+                    "kind": "StorageV2",
+                    "properties": {
+                        "minimumTlsVersion": "TLS1_2",
+                        "networkAcls": {
+                            "bypass": "AzureServices",
+                            "virtualNetworkRules": [],
+                            "ipRules": [],
+                            "defaultAction": "Allow"
+                        },
+                        "supportsHttpsTrafficOnly": true,
+                        "encryption": {
+                            "services": {
+                                "file": {
+                                    "keyType": "Account",
+                                    "enabled": true
+                                },
+                                "blob": {
+                                    "keyType": "Account",
+                                    "enabled": true
+                                }
+                            },
+                            "keySource": "Microsoft.Storage"
+                        },
+                        "accessTier": "Hot"
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "apiVersion": "2021-03-01",
+                    "name": "[concat(parameters('addsVm01'), '/AzureNetworkWatcherExtension')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('addsVm01'))]"
+                    ],
+                    "properties": {
+                        "autoUpgradeMinorVersion": true,
+                        "publisher": "Microsoft.Azure.NetworkWatcher",
+                        "type": "NetworkWatcherAgentWindows",
+                        "typeHandlerVersion": "1.4"
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "apiVersion": "2021-03-01",
+                    "name": "[concat(parameters('addsVm02'), '/AzureNetworkWatcherExtension')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('addsVm02'))]"
+                    ],
+                    "properties": {
+                        "autoUpgradeMinorVersion": true,
+                        "publisher": "Microsoft.Azure.NetworkWatcher",
+                        "type": "NetworkWatcherAgentWindows",
+                        "typeHandlerVersion": "1.4"
+                    }
+                },            
+                {
+                    "type": "Microsoft.Compute/virtualMachines",
+                    "apiVersion": "2021-03-01",
+                    "name": "[parameters('addsVm01')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/networkInterfaces', variables('addsVm01-nic'))]",
+                        "[resourceId('Microsoft.Storage/StorageAccounts', parameters('storageAccountAdds'))]"
+                    ],
+                    "zones": [
+                        "1"
+                    ],
+                    "properties": {
+                        "hardwareProfile": {
+                            "vmSize": "Standard_B2ms"
+                        },
+                        "storageProfile": {
+                            "imageReference": {
+                                "publisher": "MicrosoftWindowsServer",
+                                "offer": "WindowsServer",
+                                "sku": "2016-datacenter-gensecond",
+                                "version": "latest"
+                            },
+                            "osDisk": {
+                                "osType": "Windows",
+                                "name": "[concat(parameters('addsVm01'), '_OsDisk_1')]",
+                                "createOption": "FromImage",
+                                "caching": "ReadWrite",
+                                "managedDisk": {
+                                    "storageAccountType": "StandardSSD_LRS"
+                                },
+                                "diskSizeGB": 127
+                            },
+                            "dataDisks": []
+                        },
+                        "osProfile": {
+                            "computerName": "[parameters('addsVm01')]",
+                            "adminUsername": "acp4govadmin",
+                            "adminPassword": "[parameters('adminPassword')]",
+                            "windowsConfiguration": {
+                                "provisionVMAgent": true,
+                                "enableAutomaticUpdates": true,
+                                "patchSettings": {
+                                    "patchMode": "AutomaticByOS",
+                                    "assessmentMode": "ImageDefault"
+                                }
+                            },
+                            "secrets": [],
+                            "allowExtensionOperations": true
+                        },
+                        "networkProfile": {
+                            "networkInterfaces": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('addsVm01-nic'))]"
+                                }
+                            ]
+                        },
+                        "diagnosticsProfile": {
+                            "bootDiagnostics": {
+                                "enabled": true,
+                                "storageUri": "[concat('https://', parameters('storageAccountAdds'), '.blob.core.windows.net/')]"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachines",
+                    "apiVersion": "2021-03-01",
+                    "name": "[parameters('addsVm02')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/networkInterfaces', variables('addsVm02-nic'))]",
+                        "[resourceId('Microsoft.Storage/StorageAccounts', parameters('storageAccountAdds'))]"
+                    ],
+                    "zones": [
+                        "2"
+                    ],
+                    "properties": {
+                        "hardwareProfile": {
+                            "vmSize": "Standard_B2ms"
+                        },
+                        "storageProfile": {
+                            "imageReference": {
+                                "publisher": "MicrosoftWindowsServer",
+                                "offer": "WindowsServer",
+                                "sku": "2016-datacenter-gensecond",
+                                "version": "latest"
+                            },
+                            "osDisk": {
+                                "osType": "Windows",
+                                "name": "[concat(parameters('addsVm02'), '_OsDisk_1')]",
+                                "createOption": "FromImage",
+                                "caching": "ReadWrite",
+                                "managedDisk": {
+                                    "storageAccountType": "StandardSSD_LRS"
+                                },
+                                "diskSizeGB": 127
+                            },
+                            "dataDisks": []
+                        },
+                        "osProfile": {
+                            "computerName": "[parameters('addsVm02')]",
+                            "adminUsername": "acp4govadmin",
+                            "adminPassword": "[parameters('adminPassword')]",
+                            "windowsConfiguration": {
+                                "provisionVMAgent": true,
+                                "enableAutomaticUpdates": true,
+                                "patchSettings": {
+                                    "patchMode": "AutomaticByOS",
+                                    "assessmentMode": "ImageDefault"
+                                }
+                            },
+                            "secrets": [],
+                            "allowExtensionOperations": true
+                        },
+                        "networkProfile": {
+                            "networkInterfaces": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('addsVm02-nic'))]"
+                                }
+                            ]
+                        },
+                        "diagnosticsProfile": {
+                            "bootDiagnostics": {
+                                "enabled": true,
+                                "storageUri": "[concat('https://', parameters('storageAccountAdds'), '.blob.core.windows.net/')]"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "resourceGroup": "addsResourceGroup",
+        "displayName": "ARM Template for the Identity landing zone ADDS resources",
+        "parameters": {
+            "addsVm01": {
+                "value": "[parameters('addsVm01')]"
+            },
+            "addsVm02": {
+                "value": "[parameters('addsVm02')]"
+            },
+            "adminPassword": {
+                "value": "[parameters('adminPassword')]"
+            },
+            "storageAccountAdds": {
+                "value": "[parameters('storageAccountAdds')]"
+            },
+            "identityAddsSnId": {
+                "value": "[parameters('identityAddsSnId')]"
+            },
+            "location": {
+                "value": "[parameters('location')]"
+            }
+        }
+    }
+}

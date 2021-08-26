@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "pamVm01": {
+            "value": "[parameters('pamVm01')]"
+        },
+        "pamVm02": {
+            "value": "[parameters('pamVm02')]"
+        },
+        "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+        },
+        "storageAccountPam": {
+            "value": "[parameters('storageAccountPam')]"
+        },
+        "identityPamSnId": {
+            "value": "[parameters('identityPamSnId')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+        }
+    }
+}

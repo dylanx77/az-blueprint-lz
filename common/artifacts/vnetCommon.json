@@ -1,0 +1,192 @@
+{
+    "kind": "template",
+    "name": "network-landing-zone-network-watcher-resources",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "properties": {
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "environment": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Environment being deployed to"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Region to deploy resources to"
+                    }
+                },
+                "networkSecurityGroupName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Common Network Security Group name"
+                    }
+                },
+                "vnetName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Common VNET Name"
+                    }
+                },
+                "vnetCidr": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Common VNET CIDR"
+                    }
+                },
+                "dnsServers": {
+                    "type": "array",
+                    "metadata": {
+                        "description": "Common DNS servers"
+                    }
+                },
+                "avdSnCidr": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Azure Virtual Desktop subnet"
+                    }
+                },
+                "snowMidsSnCidr": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "SNOW Mid VM subnet"
+                    }
+                },
+                "ghRunnersSnCidr": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Github Runners VM subnet"
+                    }
+                }
+            },
+            "variables": {
+                "avdSubnetName": "[concat('subnet-', replace(parameters('avdSnCidr'),'/', '_'), '-', parameters('environment'), '-avd')]",
+                "snowMidsSubnetName": "[concat('subnet-', replace(parameters('snowMidsSnCidr'),'/', '_'), '-', parameters('environment'), '-snow-mids')]",
+                "ghRunnersSubnetName": "[concat('subnet-', replace(parameters('ghRunnersSnCidr'),'/', '_'), '-', parameters('environment'), '-github-runners')]"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Network/networkSecurityGroups",
+                    "apiVersion": "2020-11-01",
+                    "name": "[parameters('networkSecurityGroupName')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "securityRules": []
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/virtualNetworks",
+                    "apiVersion": "2020-11-01",
+                    "name": "[parameters('vnetName')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                    ],
+                    "properties": {
+                        "addressSpace": {
+                            "addressPrefixes": [
+                                "[parameters('vnetCidr')]"
+                            ]
+                        },
+                        "dhcpOptions": {
+                            "dnsServers": "[parameters('dnsServers')]"
+                        },
+                        "subnets": [
+                            {
+                                "name": "[variables('avdSubnetName')]",
+                                "properties": {
+                                    "addressPrefix": "[parameters('avdSnCidr')]",
+                                    "networkSecurityGroup": {
+                                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                                    },
+                                    "delegations": [],
+                                    "privateEndpointNetworkPolicies": "Enabled",
+                                    "privateLinkServiceNetworkPolicies": "Enabled"
+                                }
+                            },
+                            {
+                                "name": "[variables('snowMidsSubnetName')]",
+                                "properties": {
+                                    "addressPrefix": "[parameters('snowMidsSnCidr')]",
+                                    "networkSecurityGroup": {
+                                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                                    },
+                                    "serviceEndpoints": [],
+                                    "delegations": [],
+                                    "privateEndpointNetworkPolicies": "Enabled",
+                                    "privateLinkServiceNetworkPolicies": "Enabled"
+                                }
+                            },
+                            {
+                                "name": "[variables('ghRunnersSubnetName')]",
+                                "properties": {
+                                    "addressPrefix": "[parameters('ghRunnersSnCidr')]",
+                                    "networkSecurityGroup": {
+                                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                                    },
+                                    "serviceEndpoints": [],
+                                    "delegations": [],
+                                    "privateEndpointNetworkPolicies": "Enabled",
+                                    "privateLinkServiceNetworkPolicies": "Enabled"
+                                }
+                            }
+                        ],
+                        "enableDdosProtection": false
+                    }
+                }
+            ],
+            "outputs": {
+                "commonVnetId": {
+                    "type": "string",
+                    "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+                },
+                "avdSubnetId": {
+                    "type": "string",
+                    "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), variables('avdSubnetName'))]"
+                },
+                "snowSubnetId": {
+                    "type": "string",
+                    "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), variables('snowMidsSubnetName'))]"
+                },
+                "ghRunnersSubnetId": {
+                    "type": "string",
+                    "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), variables('ghRunnersSubnetName'))]"
+                }
+            }
+        },
+        "resourceGroup": "commonVnetResourceGroup",
+        "displayName": "ARM template for the Common landing zone virtual network",
+        "parameters": {
+            "environment": {
+                "value": "[parameters('environment')]"
+            },
+            "location": {
+                "value": "[parameters('location')]"
+            },
+            "networkSecurityGroupName": {
+                "value": "[parameters('networkSecurityGroupName')]"
+            },
+            "vnetName": {
+                "value": "[parameters('vnetName')]"
+            },
+            "vnetCidr": {
+                "value": "[parameters('vnetCidr')]"
+            },
+            "dnsServers": {
+                "value": "[parameters('dnsServers')]"
+            },
+            "avdSnCidr": {
+                "value": "[parameters('avdSnCidr')]"
+            },
+            "snowMidsSnCidr": {
+                "value": "[parameters('snowMidsSnCidr')]"
+            },
+            "ghRunnersSnCidr": {
+                "value": "[parameters('ghRunnersSnCidr')]"
+            }
+        }
+    }
+}

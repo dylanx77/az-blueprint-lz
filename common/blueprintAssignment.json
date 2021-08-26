@@ -1,0 +1,122 @@
+{
+    "properties": {
+        "blueprintId": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/providers/Microsoft.Blueprint/blueprints/CommonLzBpTest",
+        "description": "Test blueprint assignment file for a subscription scoped blueprint.",
+        "resourceGroups": {
+            "commonVnetResourceGroup": {
+                "name": "rg-network-common-dev-eastus",
+                "location": "eastus"
+            },
+            "avdResourceGroup": {
+                "name": "rg-common-dev-avd",
+                "location": "eastus"
+            },
+            "ghRunnersResourceGroup": {
+                "name": "rg-common-dev-gh-runners",
+                "location": "eastus"
+            },
+            "midsResourceGroup": {
+                "name": "rg-common-dev-snow-mids",
+                "location": "eastus"
+            }
+        },
+        "parameters": {
+            "location": {
+                "value": "eastus"
+            },
+            "environment": {
+                "value": "dev"
+            },
+            "networkSecurityGroupName": {
+                "value": "dev-common-nsg-test"
+            },
+            "vnetName": {
+                "value": "dev-common-vnet-test"
+            },
+            "vnetCidr": {
+                "value": "10.216.5.0/24"
+            },
+            "hubName": {
+                "value": "hub-dev-network-usgovva"
+            },
+            "vnetId": {
+                "value": "[artifacts('vnetCommon').outputs.commonVnetId]"
+            },
+            "dnsServers": {
+                "value": ["10.216.5.101"]
+            },
+            "avdSnCidr": {
+                "value": "10.216.5.0/27"
+            },
+            "snowMidsSnCidr": {
+                "value": "10.216.5.64/27"
+            },
+            "ghRunnersSnCidr": {
+                "value": "10.216.5.96/27"
+            },
+            "ghRunner01": {
+                "value": "ghRunner01"
+            },
+            "ghRunner02": {
+                "value": "ghRunner02"
+            },
+            "adminPassword": {
+                "reference": {
+                    "keyVault": {
+                        "id": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/resourceGroups/rg-kv-useast-01/providers/Microsoft.KeyVault/vaults/kv-test-useast-03"
+                    },
+                    "secretName": "vm-secret-01"
+                }
+            },
+            "storageAccountGitRunners": {
+                "value": "saghrunners0129"
+            },
+            "ghRunnersSubnetId": {
+                "value": "[artifacts('vnetCommon').outputs.ghRunnersSubnetId]"
+            },
+            "midsVmName": {
+                "value": "midsVm01"
+            },
+            "storageAccountMidsVm": {
+                "value": "sasnowmids0129"
+            },
+            "midsServerSubnetId": {
+                "value": "[artifacts('vnetCommon').outputs.snowSubnetId]"
+            },
+            "workspaceName": {
+                "value": "avd-workspace-dev-cmpe-arm"
+            },
+            "applicationGroupName": {
+                "value": "avd-pool-dev-cmpe-DAG-arm"
+            },
+            "hostPoolName": {
+                "value": "avd-pool-dev-cmpe-arm"
+            },
+            "hostPoolDescription": {
+                "value": "CMPE Dev AVD Host Pool"
+            },
+            "hostPoolType": {
+                "value": "Personal"
+            },
+            "personalDesktopAssignmentType": {
+                "value": "Direct"
+            },
+            "loadBalancerType": {
+                "value": "Persistent"
+            },
+            "validationEnvironment": {
+                "value": false
+            },
+            "preferredAppGroupType": {
+                "value": "Desktop"
+            },
+            "vmTemplate": {
+                "value": ""
+            }
+        }
+    },
+    "identity": {
+        "type": "systemAssigned"
+    },
+    "location": "eastus"
+}
