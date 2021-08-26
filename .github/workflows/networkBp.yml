@@ -14,13 +14,16 @@ jobs:
       environment: Build
       runs-on: windows-2019
       steps:
-      - name: Build Stage - Log into Azure
-        run: |
-          $azureApplicationId = "0a90645e-43f7-4228-a3bd-e71961edc59b"
-          $azureTenantId= "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
-          $azurePassword = ConvertTo-SecureString "uDTKOnZiHMcwpcMs45GfEFIr.xYQSMjlSJ" -AsPlainText -Force
-          $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
-          Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
+      - name: Build - Log in to Azure Powershell
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            $azureApplicationId = "0a90645e-43f7-4228-a3bd-e71961edc59b"
+            $azureTenantId= "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
+            $azurePassword = ConvertTo-SecureString "uDTKOnZiHMcwpcMs45GfEFIr.xYQSMjlSJ" -AsPlainText -Force
+            $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
+            Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
+          azPSVersion: '4.3.0'
 
    Test:
       needs: [Build]
