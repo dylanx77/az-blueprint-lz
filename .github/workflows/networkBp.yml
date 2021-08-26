@@ -31,8 +31,10 @@ jobs:
       runs-on: windows-2019
       steps:
       - name: Set to specific Subscription for Deployment
-        run: |
-          Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
 
    Deploy:
       env:
@@ -42,8 +44,10 @@ jobs:
       environment: Deploy
       runs-on: windows-2010
       steps:
-      - uses: actions/checkout@v2    
+      - uses: actions/checkout@v2  
       - name: Deploy the Network Landing Zone
-        run: |     
-          cd C:\actions-runner\_work\az-blueprint-lz\az-blueprint-lz\network
-          .\deploy.ps1
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            cd C:\actions-runner\_work\az-blueprint-lz\az-blueprint-lz\network
+            .\deploy.ps1
