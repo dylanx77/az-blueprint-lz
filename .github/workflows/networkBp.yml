@@ -9,11 +9,11 @@ on:
     - '.github/workflows/networkBp.yml'
 
 jobs:
-
-   Build:
+   Deploy Network:
       environment: Build
       runs-on: windows-2019
       steps:
+      - uses: actions/checkout@v2
       - name: Build - Log in to Azure Powershell
         uses: azure/powershell@v1
         with:
@@ -23,33 +23,7 @@ jobs:
             $azurePassword = ConvertTo-SecureString "uDTKOnZiHMcwpcMs45GfEFIr.xYQSMjlSJ" -AsPlainText -Force
             $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
             Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
-          azPSVersion: '4.3.0'
-
-   Test:
-      needs: [Build]
-      environment: Test
-      runs-on: windows-2019
-      steps:
-      - name: Set to specific Subscription for Deployment
-        uses: azure/powershell@v1
-        with:
-          inlineScript: |
             Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
-          azPSVersion: '4.3.0'
-
-   Deploy:
-      env:
-        NODE_TLS_REJECT_UNAUTHORIZED: 0
-        GIT_SSL_NO_VERIFY: true
-      needs: [Test]
-      environment: Deploy
-      runs-on: windows-2010
-      steps:
-      - uses: actions/checkout@v2  
-      - name: Deploy the Network Landing Zone
-        uses: azure/powershell@v1
-        with:
-          inlineScript: |
             cd C:\actions-runner\_work\az-blueprint-lz\az-blueprint-lz\network
             .\deploy.ps1
           azPSVersion: '4.3.0'
