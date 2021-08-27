@@ -18,7 +18,7 @@ jobs:
         uses: azure/powershell@v1
         with:
           inlineScript: |
-            Install-Module -Name Az.Blueprint -Verbose ; Update-Help -Force -ErrorAction SilentlyContinue
+            Install-Module -Name Az.Blueprint -Verbose -Force ; Update-Help -Force -ErrorAction SilentlyContinue
             $azureApplicationId = "0a90645e-43f7-4228-a3bd-e71961edc59b"
             $azureTenantId= "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
             $azurePassword = ConvertTo-SecureString "uDTKOnZiHMcwpcMs45GfEFIr.xYQSMjlSJ" -AsPlainText -Force
