@@ -11,7 +11,7 @@ on:
 jobs:
    DeployNetwork:
       environment: Build
-      runs-on: windows-2019
+      runs-on: ubuntu-latest
       steps:
       - uses: actions/checkout@v2
       - name: Create Azure Blueprint
