@@ -23,4 +23,4 @@ jobs:
         with:
           azureManagementGroupName: "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
           blueprintName: NetworkLzBpTest
-          blueprintPath: /network/
+          blueprintPath: C:\Users\dylan.graham\OneDrive - Accenture Federal Services\Desktop\ACP4Gov Dev\acpBlueprintsV2\az-blueprint-lz\network\blueprint.json
