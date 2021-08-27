@@ -17,9 +17,9 @@ jobs:
       - name: Build - Log in to Azure Powershell
         run: |
             Install-Module -Name Az.Blueprint -Verbose -Force
-            $azureApplicationId = "0a90645e-43f7-4228-a3bd-e71961edc59b"
+            $azureApplicationId = "4e3b6b3e-e21b-4be7-9803-0c4896777731"
             $azureTenantId= "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
-            $azurePassword = ConvertTo-SecureString "uDTKOnZiHMcwpcMs45GfEFIr.xYQSMjlSJ" -AsPlainText -Force
+            $azurePassword = ConvertTo-SecureString "Q7FFjXLeBic4pzVaifGr~axEq-75k3yQxJ" -AsPlainText -Force
             $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
             Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
             Get-AzBlueprint
