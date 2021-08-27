@@ -25,4 +25,4 @@ jobs:
             Get-AzBlueprint
             Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
             cd D:\a\az-blueprint-lz\az-blueprint-lz\network
-            cat deploy.ps1
+            .\deploy.ps1
