@@ -21,7 +21,7 @@ jobs:
           AZURECLIENTID: ${{ secrets.AZURECLIENTID }}
           AZUREPASSWORD: ${{ secrets.AZUREPASSWORD }}
         with:
-          azureManagementGroupName: Tenant Root Group
+          azureSubscriptionID: 009bdc79-1eee-40cf-a62d-8dd277d1cd26
           blueprintName: NetworkLzBpTest
           blueprintPath: D:\a\az-blueprint-lz\az-blueprint-lz\network\blueprint.json
       
