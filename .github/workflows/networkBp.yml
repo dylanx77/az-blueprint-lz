@@ -14,13 +14,19 @@ jobs:
       runs-on: ubuntu-latest
       steps:
       - uses: actions/checkout@v2
-      - name: Create Azure Blueprint
-        uses: neilpeterson/action-create-blueprint@master
-        env:
-          AZURETENANTID: ${{ secrets.AZURETENANTID }}
-          AZURECLIENTID: ${{ secrets.AZURECLIENTID }}
-          AZUREPASSWORD: ${{ secrets.AZUREPASSWORD }}
+      - name: Build - Log in to Azure Powershell
+        uses: azure/powershell@v1
         with:
-          azureManagementGroupName: "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
-          blueprintName: NetworkLzBpTest
-          blueprintPath: network\blueprint.json
+          inlineScript: |
+            Get-AzBlueprint
+            Install-Module -Name Az.Blueprint -Verbose -Force
+            Get-AzBlueprint
+            $azureApplicationId = "0a90645e-43f7-4228-a3bd-e71961edc59b"
+            $azureTenantId= "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
+            $azurePassword = ConvertTo-SecureString "uDTKOnZiHMcwpcMs45GfEFIr.xYQSMjlSJ" -AsPlainText -Force
+            $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
+            Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
+            Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
+            cd D:\a\az-blueprint-lz\az-blueprint-lz\network
+            .\deploy.ps1
+          azPSVersion: '4.3.0'
