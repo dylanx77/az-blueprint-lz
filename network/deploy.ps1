@@ -6,7 +6,7 @@ $subscriptionId = "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
 
 Set-AzContext -SubscriptionId $subscriptionId
 
-Import-AzBlueprintWithArtifact -Name $bpName -InputPath $lzLocalPath -Confirm:$false
+Import-AzBlueprintWithArtifact -Name $bpName -InputPath $lzLocalPath -Confirm:$false -SubscriptionId $subscriptionId
 $bp = Get-AzBlueprint -Name $bpName
 Publish-AzBlueprint -Blueprint $bp -Version '1.0'
 New-AzBlueprintAssignment -Blueprint $bp -Name $assignmentName -AssignmentFile $assignmentBpPath
