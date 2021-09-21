@@ -31,15 +31,27 @@
                         "description": "Virtual Hub Cidr Range"
                     }
                 },
+                "azFirewallName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Name of the Azure Firewall"
+                    }
+                },
+                "azFirewallPolicyName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Name of the Azure Firewall policy"
+                    }
+                },
                 "location": {
                     "type": "string",
                     "metadata": {
                         "description": "Location for all resources."
                     }
                 }
-              },
-              "variables": {},
-              "resources": [
+            },
+            "variables": {},
+            "resources": [
                 {
                     "type": "Microsoft.Network/virtualWans",
                     "name": "[parameters('vwanName')]",
@@ -63,17 +75,97 @@
                     "properties": {
                         "addressPrefix": "[parameters('hubAddressPrefix')]",
                         "virtualWan": {
-                            "id": "[resourceId('Microsoft.Network/virtualWans',parameters('vwanName'))]"
+                            "id": "[resourceId('Microsoft.Network/virtualWans', parameters('vwanName'))]"
+                        }
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/firewallPolicies",
+                    "apiVersion": "2020-06-01",
+                    "name": "[parameters('azFirewallPolicyName')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "threatIntelMode": "Alert"
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                    "apiVersion": "2020-06-01",
+                    "name": "[concat(parameters('azFirewallPolicyName'), '/DefaultRuleCollectionGroup')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/firewallPolicies/', parameters('azFirewallPolicyName'))]"
+                    ],
+                    "properties": {
+                        "priority": 300,
+                        "ruleCollections": [
+                            {
+                                "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                "name": "RC-01",
+                                "priority": 100,
+                                "action": {
+                                    "type": "Allow"
+                                },
+                                "rules": [
+                                    {
+                                    "ruleType": "ApplicationRule",
+                                    "name": "Allow-msft",
+                                    "sourceAddresses": [
+                                        "*"
+                                    ],                
+                                    "protocols": [
+                                        {
+                                        "port": "80",
+                                        "protocolType": "http"
+                                        },
+                                        {
+                                        "port": "443",
+                                        "protocolType": "https"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "*.microsoft.com"
+                                    ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/azureFirewalls",
+                    "apiVersion": "2020-06-01",
+                    "name": "[parameters('azFirewallName')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualHubs/', parameters('vhubName'))]",
+                        "[resourceId('Microsoft.Network/firewallPolicies/', parameters('azFirewallPolicyName'))]"
+                    ],
+                    "properties": {
+                        "sku": {
+                            "name": "AZFW_Hub",
+                            "tier": "Standard"
+                        },
+                        "hubIPAddresses": {
+                            "publicIPs": {
+                            "count": 1
+                            }
+                        },
+                        "virtualHub": {
+                            "id": "[resourceId('Microsoft.Network/virtualHubs/', parameters('vhubName'))]"
+                        },
+                        "firewallPolicy": {
+                            "id": "[resourceId('Microsoft.Network/firewallPolicies/', parameters('azFirewallPolicyName'))]"
                         }
                     }
                 }
-              ],
-              "outputs": {
+            ],
+            "outputs": {
                 "vwanResourceId": {
-                  "type": "string",
-                  "value": "resourceId('Microsoft.Network/virtualNetwork', parameters('vwanName'))"
+                    "type": "string",
+                    "value": "resourceId('Microsoft.Network/virtualNetwork', parameters('vwanName'))"
                 }
-              }
+            }
         },
         "resourceGroup": "vwanRg",
         "displayName": "ARM template for the Network landing zone Network Watcher resources across relevant regions",
