@@ -12,46 +12,64 @@
           }
         },
         "parameters": {
-          "location": {
-              "type": "string",
-              "metadata":{
-                "description": "Location for resources."
-              }
-          },
-          "vwanName": {
-              "type": "string",
-              "metadata": {
-                  "description": "Name of the Virtual Wan."
-              }
-          },
-          "vwanSku": {
-              "type": "string",
-              "metadata": {
-                  "description": "Sku of the Virtual Wan."
-              },
-              "allowedValues": [
-                  "Standard",
-                  "Basic"
-              ]
-          },
-          "hubName": {
-              "type": "string",
-              "metadata": {
-                  "description": "Name of the Virtual Hub. A virtual hub is created inside a virtual wan."
-              }
-          },
-          "hubAddressPrefix": {
-              "type": "string",
-              "metadata": {
-                  "description": "The hub address prefix. This address prefix will be used as the address prefix for the hub vnet"
-              }
-          },
-          "nwWatcherLocationsFromBlueprint": {
-              "type": "array",
-              "metadata": {
-                  "description": "Locations of the NetworkWatcher resource."
-              }
-          }
+            "location": {
+                "type": "string",
+                "metadata":{
+                    "description": "Location for resources."
+                }
+            },
+            "vwanName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Name of the Virtual Wan."
+                }
+            },
+            "vwanSku": {
+                "type": "string",
+                "metadata": {
+                    "description": "Sku of the Virtual Wan."
+                },
+                "allowedValues": [
+                    "Standard",
+                    "Basic"
+                ]
+            },
+            "hubName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Name of the Virtual Hub. A virtual hub is created inside a virtual wan."
+                }
+            },
+            "hubAddressPrefix": {
+                "type": "string",
+                "metadata": {
+                    "description": "The hub address prefix. This address prefix will be used as the address prefix for the hub vnet"
+                }
+            },
+            "azFirewallName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Name of the Azure Firewall."
+                }
+            },
+            "azFirewallPolicyName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Name of the Azure firewall policy set"
+                }
+            },
+            "routeTableName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Name of the Virtual Hub route table."
+                }
+            },
+            "nwWatcherLocationsFromBlueprint": {
+                "type": "array",
+                "metadata": {
+                    "description": "Locations of the NetworkWatcher resource."
+                }
+            }
         }
     }
 }

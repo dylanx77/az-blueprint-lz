@@ -28,6 +28,15 @@
             "hubAddressPrefix": {
                 "value": "10.216.0.0/24"
             },
+            "azFirewallName": {
+                "value": "fw-dev-network-usgovva"
+            },
+            "azFirewallPolicyName": {
+                "value": "fw-policy-dev-network-usgovva"
+            },
+            "routeTableName": {
+                "value": "rt-dev-network-usgovva"
+            },
             "nwWatcherLocationsFromBlueprint": {
                 "value": [
                     "eastus",
