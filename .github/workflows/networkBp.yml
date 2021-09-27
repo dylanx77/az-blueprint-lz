@@ -14,14 +14,12 @@ jobs:
       runs-on: windows-latest
       steps:
       - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Build - Log in to Azure Powershell
         run: |
             Install-Module -Name Az.Blueprint -Verbose -Force
-            $azureApplicationId = "4e3b6b3e-e21b-4be7-9803-0c4896777731"
-            $azureTenantId= "8de3d3fb-4ae1-4c39-99e0-bede3ca0a96c"
-            $azurePassword = ConvertTo-SecureString "Q7FFjXLeBic4pzVaifGr~axEq-75k3yQxJ" -AsPlainText -Force
-            $psCred = New-Object System.Management.Automation.PSCredential($azureApplicationId , $azurePassword)
-            Connect-AzAccount -Credential $psCred -TenantId $azureTenantId  -ServicePrincipal
             Get-AzBlueprint
             Set-AzContext -Subscription "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
             cd D:\a\az-blueprint-lz\az-blueprint-lz\network

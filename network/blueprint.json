@@ -4,7 +4,7 @@
         "targetScope": "subscription",
         "type": "Microsoft.Blueprint/blueprints",
         "resourceGroups": {
-          "vwanRg": {
+          "virtualWanRg": {
               "description": "Resource group hosting all Virtual WAN related services."
           },
           "networkWatcherRg": {
@@ -56,12 +56,6 @@
                 "type": "string",
                 "metadata": {
                     "description": "Name of the Azure firewall policy set"
-                }
-            },
-            "routeTableName": {
-                "type": "string",
-                "metadata": {
-                    "description": "Name of the Virtual Hub route table."
                 }
             },
             "nwWatcherLocationsFromBlueprint": {

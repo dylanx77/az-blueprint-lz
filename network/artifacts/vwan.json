@@ -43,12 +43,6 @@
                         "description": "Name of the Azure Firewall policy"
                     }
                 },
-                "routeTableName": {
-                    "type": "string",
-                    "metadata": {
-                        "description": "Name of the Virtual Hub route table"
-                    }
-                },
                 "location": {
                     "type": "string",
                     "metadata": {
@@ -56,7 +50,8 @@
                     }
                 }
             },
-            "variables": {},
+            "variables": {
+            },
             "resources": [
                 {
                     "type": "Microsoft.Network/virtualWans",
@@ -82,6 +77,37 @@
                         "addressPrefix": "[parameters('hubAddressPrefix')]",
                         "virtualWan": {
                             "id": "[resourceId('Microsoft.Network/virtualWans', parameters('vwanName'))]"
+                        },
+                        "azureFirewall": {
+                            "id": "[resourceId('Microsoft.Network/azureFirewalls', parameters('azFirewallName'))]"
+                        },
+                        "allowBranchToBranchTraffic": false
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/azureFirewalls",
+                    "apiVersion": "2020-06-01",
+                    "name": "[parameters('azFirewallName')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]",
+                        "[resourceId('Microsoft.Network/firewallPolicies', parameters('azFirewallPolicyName'))]"
+                    ],
+                    "properties": {
+                        "sku": {
+                            "name": "AZFW_Hub",
+                            "tier": "Standard"
+                        },
+                        "hubIPAddresses": {
+                            "publicIPs": {
+                                "count": 1
+                            }
+                        },
+                        "virtualHub": {
+                            "id": "[resourceId('Microsoft.Network/virtualHubs/', parameters('hubName'))]"
+                        },
+                        "firewallPolicy": {
+                            "id": "[resourceId('Microsoft.Network/firewallPolicies/', parameters('azFirewallPolicyName'))]"
                         }
                     }
                 },
@@ -96,9 +122,76 @@
                 },
                 {
                     "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
-                    "apiVersion": "2020-06-01",
+                    "apiVersion": "2020-11-01",
+                    "name": "[concat(parameters('azFirewallPolicyName'), '/DefaultNetworkRuleCollectionGroup')]",
+                    "location": "eastus",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/firewallPolicies', parameters('azFirewallPolicyName'))]",
+                        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', parameters('azFirewallPolicyName'), 'DefaultRuleCollectionGroup')]"
+                    ],
+                    "properties": {
+                        "priority": 200,
+                        "ruleCollections": [
+                            {
+                                "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                "action": {
+                                    "type": "Allow"
+                                },
+                                "rules": [
+                                    {
+                                        "ruleType": "NetworkRule",
+                                        "name": "allow-ssh",
+                                        "ipProtocols": [
+                                            "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                            "10.10.0.0/24",
+                                            "10.218.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                            "10.10.0.0/24",
+                                            "10.218.0.0/24"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                            "22"
+                                        ]
+                                    },
+                                    {
+                                        "ruleType": "NetworkRule",
+                                        "name": "allow-icmp",
+                                        "ipProtocols": [
+                                            "ICMP"
+                                        ],
+                                        "sourceAddresses": [
+                                            "10.10.0.0/24",
+                                            "10.218.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                            "10.10.0.0/24",
+                                            "10.218.0.0/24"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                            "*"
+                                        ]
+                                    }
+                                ],
+                                "name": "network-rule-collection",
+                                "priority": 100
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                    "apiVersion": "2020-11-01",
                     "name": "[concat(parameters('azFirewallPolicyName'), '/DefaultRuleCollectionGroup')]",
-                    "location": "[parameters('location')]",
+                    "location": "eastus",
                     "dependsOn": [
                         "[resourceId('Microsoft.Network/firewallPolicies', parameters('azFirewallPolicyName'))]"
                     ],
@@ -107,147 +200,97 @@
                         "ruleCollections": [
                             {
                                 "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
-                                "name": "RC-01",
-                                "priority": 100,
                                 "action": {
                                     "type": "Allow"
                                 },
                                 "rules": [
                                     {
-                                    "ruleType": "ApplicationRule",
-                                    "name": "Allow-msft",
-                                    "sourceAddresses": [
-                                        "*"
-                                    ],                
-                                    "protocols": [
-                                        {
-                                        "port": "80",
-                                        "protocolType": "http"
-                                        },
-                                        {
-                                        "port": "443",
-                                        "protocolType": "https"
-                                        }
-                                    ],
-                                    "targetFqdns": [
-                                        "*.microsoft.com"
-                                    ]
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Allow-msft",
+                                        "protocols": [
+                                            {
+                                                "protocolType": "Http",
+                                                "port": 80
+                                            },
+                                            {
+                                                "protocolType": "Https",
+                                                "port": 443
+                                            }
+                                        ],
+                                        "fqdnTags": [],
+                                        "webCategories": [],
+                                        "targetFqdns": [
+                                            "*.microsoft.com"
+                                        ],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                            "*"
+                                        ],
+                                        "destinationAddresses": [],
+                                        "sourceIpGroups": []
                                     }
-                                ]
-                            }
-                        ]
-                    }
-                },
-                {
-                    "type": "Microsoft.Network/azureFirewalls",
-                    "apiVersion": "2020-06-01",
-                    "name": "[parameters('azFirewallName')]",
-                    "location": "[parameters('location')]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Network/virtualHubs', parameters('vhubName'))]",
-                        "[resourceId('Microsoft.Network/firewallPolicies', parameters('azFirewallPolicyName'))]"
-                    ],
-                    "properties": {
-                        "sku": {
-                            "name": "AZFW_Hub",
-                            "tier": "Standard"
-                        },
-                        "hubIPAddresses": {
-                            "publicIPs": {
-                            "count": 1
-                            }
-                        },
-                        "virtualHub": {
-                            "id": "[resourceId('Microsoft.Network/virtualHubs/', parameters('vhubName'))]"
-                        },
-                        "firewallPolicy": {
-                            "id": "[resourceId('Microsoft.Network/firewallPolicies/', parameters('azFirewallPolicyName'))]"
-                        }
-                    }
-                },
-                {
-                    "type": "Microsoft.Network/routeTables",
-                    "apiVersion": "2020-06-01",
-                    "name": "[parameters('routeTableName')]",
-                    "location": "[parameters('location')]",
-                    "properties": {
-                        "disableBgpRoutePropagation": false,
-                        "routes": [
-                            {
-                                "name": "jump-to-inet",
-                                "properties": {
-                                    "addressPrefix": "0.0.0.0/0",
-                                    "nextHopType": "Internet"
-                                }
+                                ],
+                                "name": "RC-01",
+                                "priority": 100
                             }
                         ]
                     }
                 },
                 {
                     "type": "Microsoft.Network/virtualHubs/hubRouteTables",
-                    "apiVersion": "2020-06-01",
-                    "name": "[concat(parameters('hubName'), '/route_table_vnet')]",
-                    "location": "[parameters('location')]",
+                    "apiVersion": "2020-11-01",
+                    "name": "[concat(parameters('hubName'), '/noneRouteTable')]",
                     "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
+                    ],
+                    "properties": {
+                        "routes": [],
+                        "labels": [
+                            "none"
+                        ]
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/virtualHubs/hubRouteTables",
+                    "apiVersion": "2020-11-01",
+                    "name": "[concat(parameters('hubName'), '/defaultRouteTable')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
+                    ],
+                    "properties": {
+                        "routes": [],
+                        "labels": [
+                            "default"
+                        ]
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/virtualHubs/hubRouteTables",
+                    "apiVersion": "2020-11-01",
+                    "name": "[concat(parameters('hubName'), '/hubRouteTable')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]",
                         "[resourceId('Microsoft.Network/azureFirewalls', parameters('azFirewallName'))]"
                     ],
                     "properties": {
                         "routes": [
                             {
-                                "name": "Workload-SNToFirewall",
+                                "name": "all_traffic",
                                 "destinationType": "CIDR",
                                 "destinations": [
-                                    "10.10.0.0/27"
-                                ],
-                                "nextHopType": "ResourceId",
-                                "nextHop": "[resourceId('Microsoft.Network/azureFirewalls', parameters('azFirewallName'))]"
-                            },
-                            {
-                                "name": "InternetToFirewall",
-                                "destinationType": "CIDR",
-                                "destinations": [
-                                    "0.0.0.0/0"
+                                    "0.0.0.0/0",
+                                    "10.0.0.0/8",
+                                    "172.16.0.0/12",
+                                    "192.168.0.0/16"
                                 ],
                                 "nextHopType": "ResourceId",
                                 "nextHop": "[resourceId('Microsoft.Network/azureFirewalls', parameters('azFirewallName'))]"
                             }
                         ],
                         "labels": [
-                            "VNet"
+                            "default"
                         ]
-                    }
-                },
-                {
-                    "type": "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections",
-                    "apiVersion": "2020-06-01",
-                    "name": "[concat(parameters('hubName'), '/conn_to_test_vnet')]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Network/azureFirewalls', parameters('azFirewallName'))]",
-                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]",
-                        "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', parameters('hubName'), 'route_table_vnet')]"
-                    ],
-                    "properties": {
-                        "remoteVirtualNetwork": {
-                            "id": "[reference(resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName')), '2020-11-01')]"
-                        },
-                        "allowHubToRemoteVnetTransit": true,
-                        "allowRemoteVnetToUseHubVnetGateways": false,
-                        "enableInternetSecurity": true,
-                        "routingConfiguration": {
-                            "associatedRouteTable": {
-                                "id": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', parameters('hubName'), 'route_table_vnet')]"
-                            },
-                            "propagatedRouteTables": {
-                                "labels": [
-                                    "VNet"
-                                ],
-                                "ids": [
-                                    {
-                                        "id": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', parameters('hubName'), 'route_table_vnet')]"
-                                    }
-                                ]
-                            }
-                        }
                     }
                 }
             ],
@@ -258,7 +301,7 @@
                 }
             }
         },
-        "resourceGroup": "vwanRg",
+        "resourceGroup": "virtualWanRg",
         "displayName": "ARM template for the Network landing zone Network Watcher resources across relevant regions",
         "parameters": {
             "location": {
@@ -275,6 +318,12 @@
             },
             "hubAddressPrefix": {
                 "value": "[parameters('hubAddressPrefix')]"
+            },
+            "azFirewallName": {
+                "value": "[parameters('azFirewallName')]"
+            },
+            "azFirewallPolicyName": {
+                "value": "[parameters('azFirewallPolicyName')]"
             }
         }
     }

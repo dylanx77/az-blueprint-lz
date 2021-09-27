@@ -3,7 +3,7 @@
         "blueprintId": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/providers/Microsoft.Blueprint/blueprints/NetworkLzBpTest",
         "description": "Test blueprint assignment file for a subscription scoped blueprint.",
         "resourceGroups": {
-            "vwanRg": {
+            "virtualWanRg": {
                 "name": "rg-network-dev-usgovva",
                 "location": "eastus"
             },
@@ -33,9 +33,6 @@
             },
             "azFirewallPolicyName": {
                 "value": "fw-policy-dev-network-usgovva"
-            },
-            "routeTableName": {
-                "value": "rt-dev-network-usgovva"
             },
             "nwWatcherLocationsFromBlueprint": {
                 "value": [
