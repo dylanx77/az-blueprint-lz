@@ -299,7 +299,17 @@
                         }
                     }
                 }
-            ]
+            ],
+            "outputs": {
+                "addVm01Ip": {
+                    "type": "string",
+                    "value": "reference(resourceId('Microsoft.Network/networkInterfaces', variables('addsVm01-nic'))).ipConfigurations[0].properties.privateIPAddress"
+                },
+                "addVm02Ip": {
+                    "type": "string",
+                    "value": "reference(resourceId('Microsoft.Network/networkInterfaces', variables('addsVm02-nic'))).ipConfigurations[0].properties.privateIPAddress"
+                }
+            }
         },
         "resourceGroup": "addsResourceGroup",
         "displayName": "ARM Template for the Identity landing zone ADDS resources",
