@@ -1,5 +1,5 @@
-$lzLocalPath = "C:\Users\dylan.graham\OneDrive - Accenture Federal Services\Desktop\ACP4Gov Dev\acpBlueprintsV2\common"
-$assignmentBpPath = "C:\Users\dylan.graham\OneDrive - Accenture Federal Services\Desktop\ACP4Gov Dev\acpBlueprintsV2\common\blueprintAssignment.json"
+$lzLocalPath = "C:\Users\dylan.graham\OneDrive - Accenture Federal Services\Desktop\ACP4Gov Dev\acpBlueprintsV2\az-blueprint-lz\common"
+$assignmentBpPath = "C:\Users\dylan.graham\OneDrive - Accenture Federal Services\Desktop\ACP4Gov Dev\acpBlueprintsV2\az-blueprint-lz\common\blueprintAssignment.json"
 $bpName = "CommonLzBpTest"
 $assignmentName = "assignCommonLzBpTest"
 $subscriptionId = "009bdc79-1eee-40cf-a62d-8dd277d1cd26"

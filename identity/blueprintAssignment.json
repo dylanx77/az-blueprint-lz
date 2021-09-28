@@ -28,7 +28,7 @@
                 "value": "dev"
             },
             "keyVaultName": {
-                "value": "kv-dev-identity-02"
+                "value": "kv-dev-identity-10"
             },
             "vaultSku": {
                 "value": "Standard"
@@ -82,12 +82,7 @@
                 "value": "vm-adds-test-02"
             },
             "adminPassword": {
-                "reference": {
-                    "keyVault": {
-                        "id": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/resourceGroups/rg-kv-useast-01/providers/Microsoft.KeyVault/vaults/kv-test-useast-03"
-                    },
-                    "secretName": "vm-secret-01"
-                }
+                "value": "*293I9OOdcj#"
             },
             "storageAccountAdds": {
                 "value": "saadds0129"

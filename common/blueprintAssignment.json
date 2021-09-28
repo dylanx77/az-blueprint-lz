@@ -61,12 +61,7 @@
                 "value": "ghRunner02"
             },
             "adminPassword": {
-                "reference": {
-                    "keyVault": {
-                        "id": "/subscriptions/009bdc79-1eee-40cf-a62d-8dd277d1cd26/resourceGroups/rg-kv-useast-01/providers/Microsoft.KeyVault/vaults/kv-test-useast-03"
-                    },
-                    "secretName": "vm-secret-01"
-                }
+                "value": "*293I9OOdcj#"
             },
             "storageAccountGitRunners": {
                 "value": "saghrunners0129"
