@@ -34,6 +34,12 @@
             "azFirewallPolicyName": {
                 "value": "fw-policy-dev-network-usgovva"
             },
+            "deployvpncheck": {
+                "value": "yes"
+            },
+            "deployergcheck": {
+                "value": "no"
+            },
             "nwWatcherLocationsFromBlueprint": {
                 "value": [
                     "eastus",

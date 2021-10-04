@@ -43,6 +43,20 @@
                         "description": "Name of the Azure Firewall policy"
                     }
                 },
+                "deployvpncheck": {
+                    "type": "string",
+                    "allowedValues": ["yes","no"],
+                    "metadata": {
+                        "description": "Would you like to deploy Azure VPN Gateway?"
+                    }
+                },
+                "deployergcheck": {
+                    "type": "string",
+                    "allowedValues": ["yes","no"],
+                    "metadata": {
+                        "description": "Would you like to deploy Azure Express Route Gateway?"
+                    }
+                },
                 "location": {
                     "type": "string",
                     "metadata": {
@@ -85,6 +99,45 @@
                     }
                 },
                 {
+                    "condition": "[equals(parameters('deployvpncheck'), 'yes')]",
+                    "type": "Microsoft.Network/vpnGateways",
+                    "name": "VPNGateway-01",
+                    "apiVersion": "2020-05-01",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
+                    ],
+                    "properties": {
+                        "vpnGatewayScaleUnit": 1,
+                        "virtualHub": {
+                            "id": "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
+                        },
+                        "bgpSettings": {
+                            "asn": 65515
+                        }
+                    }
+                },
+                {
+                    "condition": "[equals(parameters('deployergcheck'), 'yes')]",
+                    "type": "Microsoft.Network/expressRouteGateways",
+                    "apiVersion": "2020-05-01",
+                    "name": "ExpressRouteGateway-01",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
+                    ],
+                    "properties": {
+                        "virtualHub": {
+                            "id": "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
+                        },
+                        "autoScaleConfiguration": {
+                            "bounds": {
+                                "min": 1
+                            }
+                        }
+                    }
+                },
+                {
                     "type": "Microsoft.Network/azureFirewalls",
                     "apiVersion": "2020-06-01",
                     "name": "[parameters('azFirewallName')]",
@@ -124,74 +177,7 @@
                     "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
                     "apiVersion": "2020-11-01",
                     "name": "[concat(parameters('azFirewallPolicyName'), '/DefaultNetworkRuleCollectionGroup')]",
-                    "location": "eastus",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Network/firewallPolicies', parameters('azFirewallPolicyName'))]",
-                        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', parameters('azFirewallPolicyName'), 'DefaultRuleCollectionGroup')]"
-                    ],
-                    "properties": {
-                        "priority": 200,
-                        "ruleCollections": [
-                            {
-                                "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
-                                "action": {
-                                    "type": "Allow"
-                                },
-                                "rules": [
-                                    {
-                                        "ruleType": "NetworkRule",
-                                        "name": "allow-ssh",
-                                        "ipProtocols": [
-                                            "TCP"
-                                        ],
-                                        "sourceAddresses": [
-                                            "10.10.0.0/24",
-                                            "10.218.0.0/24"
-                                        ],
-                                        "sourceIpGroups": [],
-                                        "destinationAddresses": [
-                                            "10.10.0.0/24",
-                                            "10.218.0.0/24"
-                                        ],
-                                        "destinationIpGroups": [],
-                                        "destinationFqdns": [],
-                                        "destinationPorts": [
-                                            "22"
-                                        ]
-                                    },
-                                    {
-                                        "ruleType": "NetworkRule",
-                                        "name": "allow-icmp",
-                                        "ipProtocols": [
-                                            "ICMP"
-                                        ],
-                                        "sourceAddresses": [
-                                            "10.10.0.0/24",
-                                            "10.218.0.0/24"
-                                        ],
-                                        "sourceIpGroups": [],
-                                        "destinationAddresses": [
-                                            "10.10.0.0/24",
-                                            "10.218.0.0/24"
-                                        ],
-                                        "destinationIpGroups": [],
-                                        "destinationFqdns": [],
-                                        "destinationPorts": [
-                                            "*"
-                                        ]
-                                    }
-                                ],
-                                "name": "network-rule-collection",
-                                "priority": 100
-                            }
-                        ]
-                    }
-                },
-                {
-                    "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
-                    "apiVersion": "2020-11-01",
-                    "name": "[concat(parameters('azFirewallPolicyName'), '/DefaultRuleCollectionGroup')]",
-                    "location": "eastus",
+                    "location": "[parameters('location')]",
                     "dependsOn": [
                         "[resourceId('Microsoft.Network/firewallPolicies', parameters('azFirewallPolicyName'))]"
                     ],
@@ -200,68 +186,35 @@
                         "ruleCollections": [
                             {
                                 "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                "name": "RC-01",
+                                "priority": 100,
                                 "action": {
                                     "type": "Allow"
                                 },
                                 "rules": [
                                     {
-                                        "ruleType": "ApplicationRule",
-                                        "name": "Allow-msft",
-                                        "protocols": [
-                                            {
-                                                "protocolType": "Http",
-                                                "port": 80
-                                            },
-                                            {
-                                                "protocolType": "Https",
-                                                "port": 443
-                                            }
+                                        "ruleType": "NetworkRule",
+                                        "name": "Allow-Web-Traffic",
+                                        "ipProtocols": [
+                                            "TCP"
                                         ],
-                                        "fqdnTags": [],
-                                        "webCategories": [],
-                                        "targetFqdns": [
-                                            "*.microsoft.com"
-                                        ],
-                                        "targetUrls": [],
-                                        "terminateTLS": false,
                                         "sourceAddresses": [
+                                            "10.0.0.0/8",
+                                            "192.168.0.0/16"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
                                             "*"
                                         ],
-                                        "destinationAddresses": [],
-                                        "sourceIpGroups": []
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                            "80",
+                                            "443"
+                                        ]                
                                     }
-                                ],
-                                "name": "RC-01",
-                                "priority": 100
+                                ]
                             }
-                        ]
-                    }
-                },
-                {
-                    "type": "Microsoft.Network/virtualHubs/hubRouteTables",
-                    "apiVersion": "2020-11-01",
-                    "name": "[concat(parameters('hubName'), '/noneRouteTable')]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
-                    ],
-                    "properties": {
-                        "routes": [],
-                        "labels": [
-                            "none"
-                        ]
-                    }
-                },
-                {
-                    "type": "Microsoft.Network/virtualHubs/hubRouteTables",
-                    "apiVersion": "2020-11-01",
-                    "name": "[concat(parameters('hubName'), '/defaultRouteTable')]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Network/virtualHubs', parameters('hubName'))]"
-                    ],
-                    "properties": {
-                        "routes": [],
-                        "labels": [
-                            "default"
                         ]
                     }
                 },
@@ -276,20 +229,17 @@
                     "properties": {
                         "routes": [
                             {
-                                "name": "all_traffic",
+                                "name": "InternetToFirewall",
                                 "destinationType": "CIDR",
                                 "destinations": [
-                                    "0.0.0.0/0",
-                                    "10.0.0.0/8",
-                                    "172.16.0.0/12",
-                                    "192.168.0.0/16"
+                                    "0.0.0.0/0"
                                 ],
                                 "nextHopType": "ResourceId",
                                 "nextHop": "[resourceId('Microsoft.Network/azureFirewalls', parameters('azFirewallName'))]"
                             }
                         ],
                         "labels": [
-                            "default"
+                            "VNet"
                         ]
                     }
                 }
@@ -324,6 +274,12 @@
             },
             "azFirewallPolicyName": {
                 "value": "[parameters('azFirewallPolicyName')]"
+            },
+            "deployvpncheck": {
+                "value": "[parameters('deployvpncheck')]"
+            },
+            "deployergcheck": {
+                "value": "[parameters('deployergcheck')]"
             }
         }
     }

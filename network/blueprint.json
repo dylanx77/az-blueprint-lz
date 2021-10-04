@@ -63,6 +63,20 @@
                 "metadata": {
                     "description": "Locations of the NetworkWatcher resource."
                 }
+            },
+            "deployvpncheck": {
+                "type": "string",
+                "allowedValues": ["yes","no"],
+                "metadata": {
+                    "description": "Would you like to deploy Azure VPN Gateway?"
+                }
+            },
+            "deployergcheck": {
+                "type": "string",
+                "allowedValues": ["yes","no"],
+                "metadata": {
+                    "description": "Would you like to deploy Azure Express Route Gateway?"
+                }
             }
         }
     }
