@@ -4,7 +4,7 @@
         "description": "Test blueprint assignment file for a subscription scoped blueprint.",
         "resourceGroups": {
             "virtualWanRg": {
-                "name": "rg-network-dev-usgovva",
+                "name": "rg-network-dev-usgovva-01",
                 "location": "eastus"
             },
             "networkWatcherRg": {
@@ -17,28 +17,37 @@
                 "value": "eastus"
             },
             "vwanName": {
-                "value": "vwan-dev-network-usgovva"
+                "value": "vwan-dev-network-usgovva-01"
             },
             "vwanSku": {
                 "value": "Standard"
             },
             "hubName": {
-                "value": "hub-dev-network-usgovva"
+                "value": "hub-dev-network-usgovva-01"
             },
             "hubAddressPrefix": {
-                "value": "10.216.0.0/24"
+                "value": "10.2.0.0/24"
             },
             "azFirewallName": {
-                "value": "fw-dev-network-usgovva"
+                "value": "fw-dev-network-usgovva-01"
             },
             "azFirewallPolicyName": {
-                "value": "fw-policy-dev-network-usgovva"
+                "value": "fw-policy-dev-network-usgovva-01"
             },
             "deployvpncheck": {
                 "value": "yes"
             },
             "deployergcheck": {
                 "value": "no"
+            },
+            "logAnalyticsSubscriptionId": {
+                "value": "009bdc79-1eee-40cf-a62d-8dd277d1cd26"
+            },
+            "logAnalyticsResourceGroupName": {
+                "value": "rg-la-useast-01"
+            },
+            "logAnalyticsName": {
+                "value": "la-test-useast-01"
             },
             "nwWatcherLocationsFromBlueprint": {
                 "value": [

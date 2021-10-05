@@ -57,6 +57,24 @@
                         "description": "Would you like to deploy Azure Express Route Gateway?"
                     }
                 },
+                "logAnalyticsSubscriptionId": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Subscription Id that log analytics workspace exists in"
+                    }
+                },
+                "logAnalyticsResourceGroupName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Resource group log analytics workspace exists in"
+                    }
+                },
+                "logAnalyticsName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "Name of Log Analytics workspace to send logs to"
+                    }
+                },
                 "location": {
                     "type": "string",
                     "metadata": {
@@ -162,7 +180,58 @@
                         "firewallPolicy": {
                             "id": "[resourceId('Microsoft.Network/firewallPolicies/', parameters('azFirewallPolicyName'))]"
                         }
-                    }
+                    },
+                    "resources": [
+                        {
+                            "type": "providers/diagnosticSettings",
+                            "apiVersion": "2017-05-01-preview",
+                            "name": "Microsoft.Insights/diagnosticSettings",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/azureFirewalls', parameters('azFirewallName'))]"
+                            ],
+                            "properties":{
+                                "name":"Send-to-la-workspace",
+                                "workspaceId": "[concat('/subscriptions/', parameters('logAnalyticsSubscriptionId'),  '/resourceGroups/', parameters('logAnalyticsResourceGroupName'), '/providers/microsoft.operationalinsights/workspaces/', parameters('logAnalyticsName'))]",
+                                "logs":[
+                                    {
+                                        "category": "AzureFirewallApplicationRule",
+                                        "enabled": true,
+                                        "retentionPolicy": {
+                                            "enabled": false,
+                                            "days": 0
+                                        }
+                                    },
+                                    {
+                                        "category": "AzureFirewallNetworkRule",
+                                        "enabled": true,
+                                        "retentionPolicy": {
+                                            "days": 0,
+                                            "enabled": false
+                                        }
+                                    },
+                                    {
+                                        "category": "AzureFirewallDnsProxy",
+                                        "enabled": true,
+                                        "retentionPolicy": {
+                                            "days": 0,
+                                            "enabled": false
+                                        }
+                                    }
+                                ],
+                                "metrics": [
+                                    {
+                                        "category": "AllMetrics",
+                                        "enabled": true,
+                                        "retentionPolicy": {
+                                            "enabled": false,
+                                            "days": 0
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 },
                 {
                     "type": "Microsoft.Network/firewallPolicies",
@@ -280,6 +349,15 @@
             },
             "deployergcheck": {
                 "value": "[parameters('deployergcheck')]"
+            },
+            "logAnalyticsSubscriptionId": {
+                "value": "[parameters('logAnalyticsSubscriptionId')]"
+            },
+            "logAnalyticsResourceGroupName": {
+                "value": "[parameters('logAnalyticsResourceGroupName')]"
+            },
+            "logAnalyticsName": {
+                "value": "[parameters('logAnalyticsName')]"
             }
         }
     }

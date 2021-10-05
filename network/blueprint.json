@@ -77,6 +77,24 @@
                 "metadata": {
                     "description": "Would you like to deploy Azure Express Route Gateway?"
                 }
+            },
+            "logAnalyticsSubscriptionId": {
+                "type": "string",
+                "metadata": {
+                    "description": "Subscription Id that log analytics workspace exists in"
+                }
+            },
+            "logAnalyticsResourceGroupName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Resource group log analytics workspace exists in"
+                }
+            },
+            "logAnalyticsName": {
+                "type": "string",
+                "metadata": {
+                    "description": "Name of Log Analytics workspace to send logs to"
+                }
             }
         }
     }
